@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"strict": true,
+		"jsx": "react-jsx",
+		"esModuleInterop": true,
+		"jsxImportSource": "hono/jsx",
+		"baseUrl": "src/",
+		"paths": {
+			"@/*": ["./*"]
+		}
+	}
+}

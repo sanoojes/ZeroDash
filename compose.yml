@@ -1,0 +1,13 @@
+services:
+  zerodash-db:
+    image: postgres:18
+    container_name: zerodash-db
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/postgresql
+
+volumes:
+  db_data:
