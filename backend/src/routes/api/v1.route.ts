@@ -21,6 +21,9 @@ v1.route("/live", liveRouter);
 // Better Auth
 v1.route("/auth", authRouter);
 
+// Redirect /api/v1/docs => api/docs
+v1.get("/docs", (c) => c.redirect("/api/docs"));
+
 // GET '/'
 const indexMessage = `Why are you here?? You shouldn't be here... But hey, welcome to ${APP_NAME} API!`;
 v1.openapi(
