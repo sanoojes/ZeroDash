@@ -1,11 +1,11 @@
 import { createRoute } from "@hono/zod-openapi";
-import { APP_NAME } from "@/env";
+import env from "@/env";
 import { StatusCodes } from "@/lib/http";
 import { jsonContent } from "@/lib/openapi/helpers";
 import { createMessageObjectSchema } from "@/lib/openapi/schemas";
 import authRouter from "@/routes/api/v1/auth.route";
-import deviceRouter from "@/routes/api/v1/device.route";
-import realtimeRouter from "@/routes/api/v1/realtime.route";
+import deviceRouter from "@/routes/api/v1/device/index.route";
+import realtimeRouter from "@/routes/api/v1/realtime/index.route";
 import { createRouter } from "@/utils/router";
 
 // Starts at "/api/v1"
@@ -25,7 +25,7 @@ v1.route("/auth", authRouter);
 v1.get("/docs", (c) => c.redirect("/api/docs"));
 
 // GET '/'
-const indexMessage = `Why are you here?? You shouldn't be here... But hey, welcome to ${APP_NAME} API!`;
+const indexMessage = `Why are you here?? You shouldn't be here... But hey, welcome to ${env.APP_NAME} API!`;
 v1.openapi(
 	createRoute({
 		tags: ["index"],
@@ -34,7 +34,7 @@ v1.openapi(
 		responses: {
 			[StatusCodes.OK]: jsonContent(
 				createMessageObjectSchema(indexMessage),
-				`${APP_NAME} API Index`,
+				`${env.APP_NAME} API Index`,
 			),
 		},
 	}),

@@ -1,10 +1,10 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { authSchema } from "@/db/schema";
-import { DATABASE_URL } from "@/env";
+import env from "@/env";
 
 const pool = new Pool({
-	connectionString: DATABASE_URL,
+	connectionString: env.DATABASE_URL,
 	ssl: {
 		rejectUnauthorized: false,
 	},

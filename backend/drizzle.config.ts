@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { defineConfig } from "drizzle-kit";
-import { DATABASE_URL } from "@/env";
+import env from "@/env";
 
 const SCHEMA_FOLDER = "./src/db/schema/";
 const schema = [
@@ -13,6 +13,6 @@ export default defineConfig({
 	schema: schema,
 	dialect: "postgresql",
 	dbCredentials: {
-		url: DATABASE_URL,
+		url: env.DATABASE_URL,
 	},
 });

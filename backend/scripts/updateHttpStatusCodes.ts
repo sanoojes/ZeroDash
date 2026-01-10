@@ -21,8 +21,8 @@ const run = async () => {
 	const CODES_URL =
 		"https://raw.githubusercontent.com/prettymuchbryce/http-status-codes/refs/heads/master/codes.json";
 
-	const FILE_CODES = "src/lib/http/http-status-codes.ts";
-	const FILE_PHRASES = "src/lib/http/http-status-phrases.ts";
+	const FILE_CODES = "src/lib/http/httpStatusCodes.ts";
+	const FILE_PHRASES = "src/lib/http/httpStatusPhrases.ts";
 
 	const project = new Project({
 		tsConfigFilePath: "tsconfig.json",
@@ -36,7 +36,7 @@ const run = async () => {
 
 	const timestamp = new Date().toUTCString();
 	const header = (label: string) =>
-		`// Generated file. Do not edit
+		`// Generated file. DO NOT EDIT !!
 // ${label} retrieved on ${timestamp} from ${CODES_URL}`;
 
 	const statusCodeFile = project.createSourceFile(

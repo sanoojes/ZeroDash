@@ -1,45 +1,47 @@
-import {
-	version,
-	//	name
-} from "@root/package.json";
-import { requireEnv } from "@/utils/env";
+import { z } from "zod";
+import pkg from "@root/package.json";
 
-export const VERSION = version ?? "0.1.0";
-// export const APP_NAME = name;
-export const APP_NAME = "ZeroDash Backend";
+const EnvSchema = z.object({
+	PORT: z.string().default("3000"),
+	APP_URL: z.url(),
+	AUTH_SECRET: z.string().min(1),
+	DATABASE_URL: z.string().min(1),
 
-export const PORT = process.env.PORT ?? "3000";
-export const APP_URL = requireEnv("APP_URL");
+	GITHUB_CLIENT_ID: z.string().min(1),
+	GITHUB_CLIENT_SECRET: z.string().min(1),
+	DISCORD_CLIENT_ID: z.string().min(1),
+	DISCORD_CLIENT_SECRET: z.string().min(1),
 
-export const AUTH_SECRET = requireEnv("AUTH_SECRET");
+	NODE_ENV: z
+		.enum(["production", "development", "test"])
+		.default("development"),
 
-export const DATABASE_URL = requireEnv("DATABASE_URL");
+	LOG_LEVEL: z.enum([
+		"fatal",
+		"error",
+		"warn",
+		"info",
+		"debug",
+		"trace",
+		"silent",
+	]),
+});
 
-export const GITHUB_CLIENT_ID = requireEnv("GITHUB_CLIENT_ID");
-export const GITHUB_CLIENT_SECRET = requireEnv("GITHUB_CLIENT_SECRET");
-export const DISCORD_CLIENT_ID = requireEnv("DISCORD_CLIENT_ID");
-export const DISCORD_CLIENT_SECRET = requireEnv("DISCORD_CLIENT_SECRET");
+const { success, error, data } = EnvSchema.safeParse(process.env);
+if (!success) {
+	console.error("Invalid env:\n", z.prettifyError(error));
+	process.exit(1);
+}
 
-export const ENV = process.env.NODE_ENV ?? "dev";
-export const IS_PRODUCTION = ENV === "production";
-export const LOG_LEVEL = IS_PRODUCTION ? "info" : "debug";
-
-export default {
-	APP_NAME,
-	VERSION,
-	PORT,
-	APP_URL,
-
-	LOG_LEVEL,
-	IS_PRODUCTION,
-
-	DATABASE_URL,
-
-	// Auth stuff
-	AUTH_SECRET,
-
-	GITHUB_CLIENT_ID,
-	GITHUB_CLIENT_SECRET,
-	DISCORD_CLIENT_ID,
-	DISCORD_CLIENT_SECRET,
+export type env = z.infer<typeof EnvSchema> & {
+	APP_NAME: string;
+	VERSION: string;
 };
+
+export const env: env = {
+	APP_NAME: "ZeroDash Backend",
+	VERSION: pkg.version ?? "0.1.0",
+	...data,
+};
+
+export default env;

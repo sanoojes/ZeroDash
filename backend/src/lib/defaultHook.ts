@@ -1,8 +1,11 @@
 import type { Hook } from "@hono/zod-openapi";
-import type { Env } from "hono";
 import { StatusCodes } from "@/lib/http";
+import type { AppBindings } from "@/lib/types";
 
-const defaultHook: Hook<unknown, Env, string, unknown> = (result, c) => {
+const defaultHook: Hook<unknown, AppBindings, string, unknown> = (
+	result,
+	c,
+) => {
 	if (!result.success) {
 		return c.json(
 			{

@@ -1,4 +1,4 @@
-import * as StatusCodes from "@/lib/http/http-status-codes";
-import * as StatusPhrases from "@/lib/http/http-status-phrases";
+import * as StatusCodes from "@/lib/http/httpStatusCodes";
+import * as StatusPhrases from "@/lib/http/httpStatusPhrases";
 
 export { StatusCodes, StatusPhrases };

@@ -1,4 +1,4 @@
-import jsonContent from "@/lib/openapi/helpers/json-content.js";
+import jsonContent from "@/lib/openapi/helpers/jsonContent";
 import type { ZodSchema } from "@/lib/openapi/helpers/types.ts";
 
 const jsonContentRequired = <T extends ZodSchema>(

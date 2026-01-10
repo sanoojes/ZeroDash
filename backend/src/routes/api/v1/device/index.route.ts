@@ -1,7 +1,7 @@
-// TODO: multiple device connection with socket.io
+// TODO: multiple device connection with socket.io or websocket
 
 import { createRoute } from "@hono/zod-openapi";
-import { APP_NAME } from "@/env";
+import env from "@/env";
 import { StatusCodes } from "@/lib/http";
 import { jsonContent } from "@/lib/openapi/helpers";
 import { createMessageObjectSchema } from "@/lib/openapi/schemas";
@@ -10,7 +10,7 @@ import { createRouter } from "@/utils/router";
 const device = createRouter();
 
 // GET '/'
-const indexMessage = `Why are you here?? You shouldn't be here... But hey, welcome to ${APP_NAME} API!`;
+const indexMessage = `Why are you here?? You shouldn't be here... But hey, welcome to ${env.APP_NAME} API!`;
 device.openapi(
 	createRoute({
 		tags: ["device"],
@@ -19,7 +19,7 @@ device.openapi(
 		responses: {
 			[StatusCodes.OK]: jsonContent(
 				createMessageObjectSchema(indexMessage),
-				`${APP_NAME} API Index`,
+				`${env.APP_NAME} API Index`,
 			),
 		},
 	}),

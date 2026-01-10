@@ -3,16 +3,16 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 import db from "@/db";
 import { authSchema } from "@/db/schema";
-import env, { APP_NAME, APP_URL, AUTH_SECRET } from "@/env";
+import env from "@/env";
 import { USER_ROLES } from "@/lib/auth/constants";
 import plugins from "@/lib/auth/plugins";
 
 export const auth = betterAuth({
 	plugins,
-	baseURL: APP_URL,
+	baseURL: env.APP_URL,
 	basePath: "/api/v1/auth",
-	secret: AUTH_SECRET,
-	appName: APP_NAME,
+	secret: env.AUTH_SECRET,
+	appName: env.APP_NAME,
 
 	database: drizzleAdapter(db, {
 		provider: "pg",
@@ -31,7 +31,7 @@ export const auth = betterAuth({
 		},
 	},
 
-	trustedOrigins: ["http://localhost:5173", APP_URL],
+	trustedOrigins: ["http://localhost:5173", env.APP_URL],
 	emailAndPassword: {
 		enabled: true,
 		minPasswordLength: 8,

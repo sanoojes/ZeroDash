@@ -1,6 +1,6 @@
 import type { ErrorHandler } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
-import { IS_PRODUCTION } from "@/env";
+import env from "@/env";
 import { StatusCodes } from "@/lib/http";
 
 const onError: ErrorHandler = (err, c) => {
@@ -15,7 +15,7 @@ const onError: ErrorHandler = (err, c) => {
 		{
 			message: err.message,
 
-			stack: IS_PRODUCTION ? undefined : err.stack,
+			stack: env.NODE_ENV === "production" ? undefined : err.stack,
 		},
 		statusCode,
 	);

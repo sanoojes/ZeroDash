@@ -1,3 +1,13 @@
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3000", {
+	path: "/api/v1/realtime",
+});
+
+socket.on("device:metrics", (e) => {
+	console.log("device:metrics", e);
+});
+
 function App() {
 	return (
 		<>

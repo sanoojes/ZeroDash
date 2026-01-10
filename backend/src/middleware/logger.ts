@@ -1,20 +1,8 @@
-import { pinoLogger as logger } from "hono-pino";
-import pino from "pino";
-import pretty from "pino-pretty";
-
-import env from "@/env";
+import { pinoLogger as pLogger } from "hono-pino";
+import { logger } from "@/utils/logger";
 
 export function pinoLogger() {
-	return logger({
-		pino: pino(
-			{
-				level: env.LOG_LEVEL || "info",
-				transport: {
-					target: "hono-pino/debug-log",
-				},
-				timestamp: pino.stdTimeFunctions.isoTime,
-			},
-			env.IS_PRODUCTION ? pretty() : undefined,
-		),
+	return pLogger({
+		pino: logger,
 	});
 }

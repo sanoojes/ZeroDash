@@ -1,4 +1,4 @@
-import v1_router from "@/routes/api/v1.route";
+import v1_router from "@/routes/api/v1/index.route";
 import { createRouter } from "@/utils/router";
 
 const api = createRouter();
