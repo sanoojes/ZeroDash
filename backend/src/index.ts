@@ -4,7 +4,7 @@ import { serveStatic } from "hono/bun";
 import createApp from "@/app";
 import { ENV, PORT } from "@/env";
 import { configureOpenAPI } from "@/lib/openapi";
-import v1_router from "@/routes/api/v1.route";
+import APIRouter from "@/routes/api/api.route";
 
 console.log("Environment:", ENV);
 
@@ -22,7 +22,7 @@ app.get("/", serveStatic({ path: "../dist/index.html" }));
 
 // every api stuff SHOULD GO THERE
 // idk, design choice ig
-app.route("/api/v1", v1_router);
+app.route("/api", APIRouter);
 
 export default {
 	port: PORT,
