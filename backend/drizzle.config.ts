@@ -1,6 +1,6 @@
-import { DATABASE_URL } from "@/env";
-import { defineConfig } from "drizzle-kit";
 import { join } from "node:path";
+import { defineConfig } from "drizzle-kit";
+import { DATABASE_URL } from "@/env";
 
 const SCHEMA_FOLDER = "./src/db/schema/";
 const schema = [

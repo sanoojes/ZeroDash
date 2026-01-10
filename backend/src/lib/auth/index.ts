@@ -1,29 +1,41 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { openAPI } from "better-auth/plugins";
 
 import db from "@/db";
-import env, { IS_PRODUCTION } from "@/env";
-import { authSchema } from "@/db/schema/auth";
-
-const plugins = [];
-
-if (!IS_PRODUCTION) {
-	plugins.push(openAPI());
-}
+import { authSchema } from "@/db/schema";
+import env, { APP_NAME, APP_URL, AUTH_SECRET } from "@/env";
+import { USER_ROLES } from "@/lib/auth/constants";
+import plugins from "@/lib/auth/plugins";
 
 export const auth = betterAuth({
 	plugins,
+	baseURL: APP_URL,
 	basePath: "/api/v1/auth",
+	secret: AUTH_SECRET,
+	appName: APP_NAME,
 
 	database: drizzleAdapter(db, {
 		provider: "pg",
-		schema: authSchema,
+		schema: { ...authSchema },
 	}),
 
-	trustedOrigins: ["http://localhost:5173"],
+	user: {
+		modelName: "users",
+		additionalFields: {
+			role: {
+				type: USER_ROLES,
+				defaultValue: "user",
+				required: false,
+				input: false,
+			},
+		},
+	},
+
+	trustedOrigins: ["http://localhost:5173", APP_URL],
 	emailAndPassword: {
 		enabled: true,
+		minPasswordLength: 8,
+		maxPasswordLength: 256,
 	},
 	socialProviders: {
 		github: {
@@ -34,6 +46,10 @@ export const auth = betterAuth({
 			clientId: env.DISCORD_CLIENT_ID,
 			clientSecret: env.DISCORD_CLIENT_SECRET,
 		},
+	},
+
+	telemetry: {
+		enabled: false,
 	},
 });
 

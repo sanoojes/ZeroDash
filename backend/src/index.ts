@@ -1,35 +1,28 @@
 import "dotenv/config";
 
-import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
-import { trimTrailingSlash } from "hono/trailing-slash";
-
-import v1 from "@/routes/api/v1";
+import createApp from "@/app";
 import { ENV, PORT } from "@/env";
-import { createLogger } from "@/utils/logger";
+import { configureOpenAPI } from "@/lib/openapi";
+import v1_router from "@/routes/api/v1.route";
 
 console.log("Environment:", ENV);
 
-const app = new Hono({
-	strict: true,
-});
+const app = createApp();
 
-app.use(trimTrailingSlash());
-
-app.use(createLogger());
+// Setup OpenAPI stuff
+configureOpenAPI(app);
 
 app.use(
 	"/*",
 	serveStatic({ root: "../dist", rewriteRequestPath: (path) => path }),
 );
 
-app.notFound((c) => c.json({ message: "Not Found", ok: false }, 404));
-
 app.get("/", serveStatic({ path: "../dist/index.html" }));
 
 // every api stuff SHOULD GO THERE
 // idk, design choice ig
-app.route("/api/v1", v1);
+app.route("/api/v1", v1_router);
 
 export default {
 	port: PORT,

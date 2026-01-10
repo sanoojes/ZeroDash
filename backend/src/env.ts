@@ -1,9 +1,17 @@
+import {
+	version,
+	//	name
+} from "@root/package.json";
 import { requireEnv } from "@/utils/env";
 
-export const PORT = process.env.PORT ?? "3000";
+export const VERSION = version ?? "0.1.0";
+// export const APP_NAME = name;
+export const APP_NAME = "ZeroDash Backend";
 
-export const BETTER_AUTH_URL = requireEnv("BETTER_AUTH_URL");
-export const BETTER_AUTH_SECRET = requireEnv("BETTER_AUTH_SECRET");
+export const PORT = process.env.PORT ?? "3000";
+export const APP_URL = requireEnv("APP_URL");
+
+export const AUTH_SECRET = requireEnv("AUTH_SECRET");
 
 export const DATABASE_URL = requireEnv("DATABASE_URL");
 
@@ -14,17 +22,21 @@ export const DISCORD_CLIENT_SECRET = requireEnv("DISCORD_CLIENT_SECRET");
 
 export const ENV = process.env.NODE_ENV ?? "dev";
 export const IS_PRODUCTION = ENV === "production";
+export const LOG_LEVEL = IS_PRODUCTION ? "info" : "debug";
 
 export default {
+	APP_NAME,
+	VERSION,
 	PORT,
+	APP_URL,
 
+	LOG_LEVEL,
 	IS_PRODUCTION,
 
 	DATABASE_URL,
 
 	// Auth stuff
-	BETTER_AUTH_URL,
-	BETTER_AUTH_SECRET,
+	AUTH_SECRET,
 
 	GITHUB_CLIENT_ID,
 	GITHUB_CLIENT_SECRET,
