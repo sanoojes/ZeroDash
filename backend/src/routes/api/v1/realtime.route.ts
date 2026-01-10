@@ -1,13 +1,12 @@
-import { protect } from "@root/src/middleware/auth";
 import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/bun";
+import { protect } from "@/middleware/auth";
 
-const app = new Hono();
+const realtime = new Hono();
 
-app.get(
-	"/api/v1/live",
+realtime.get(
+	"/",
 	protect,
-	// only upgrade after auth passes
 	upgradeWebSocket((c) => {
 		const session = c.get("session");
 
@@ -20,11 +19,9 @@ app.get(
 				ws.send(`echo: ${evt.data}`);
 			},
 
-			onClose() {
-				// optional cleanup
-			},
+			onClose() {},
 		};
 	}),
 );
 
-export default app;
+export default realtime;

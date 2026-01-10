@@ -5,7 +5,7 @@ import { jsonContent } from "@/lib/openapi/helpers";
 import { createMessageObjectSchema } from "@/lib/openapi/schemas";
 import authRouter from "@/routes/api/v1/auth.route";
 import deviceRouter from "@/routes/api/v1/device.route";
-import liveRouter from "@/routes/api/v1/live.route";
+import realtimeRouter from "@/routes/api/v1/realtime.route";
 import { createRouter } from "@/utils/router";
 
 // Starts at "/api/v1"
@@ -15,8 +15,8 @@ const v1 = createRouter();
 // Devices
 v1.route("/device", deviceRouter);
 
-// Live
-v1.route("/live", liveRouter);
+// Realtime
+v1.route("/realtime", realtimeRouter);
 
 // Better Auth
 v1.route("/auth", authRouter);
