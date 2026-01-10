@@ -1,6 +1,6 @@
-import { createRouter } from "@root/src/utils/router";
 import { cors } from "hono/cors";
 import { auth as betterAuth } from "@/lib/auth";
+import { createRouter } from "@/utils/router";
 
 const auth = createRouter();
 
