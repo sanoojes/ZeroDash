@@ -1,5 +1,5 @@
-import { z } from "zod";
 import pkg from "@root/package.json";
+import { z } from "zod";
 
 const EnvSchema = z.object({
 	PORT: z.string().default("3000"),

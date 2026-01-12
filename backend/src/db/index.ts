@@ -5,9 +5,6 @@ import env from "@/env";
 
 const pool = new Pool({
 	connectionString: env.DATABASE_URL,
-	ssl: {
-		rejectUnauthorized: false,
-	},
 });
 
 const db = drizzle({
@@ -19,13 +16,11 @@ export const initDB = async () => {
 	try {
 		const client = await pool.connect();
 		client.release();
-		console.log("Database Connected");
+		console.info("Database Connected");
 
 		return { db };
 	} catch (err) {
-		console.error(
-			`Database Connection Error: ${err instanceof Error ? err.message : err}`,
-		);
+		console.error(`Database Connection Error: \n`, err);
 		process.exit(1);
 	}
 };

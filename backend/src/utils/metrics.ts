@@ -1,59 +1,151 @@
-import fs from "node:fs";
-import os from "node:os";
-import { performance } from "node:perf_hooks";
+// TODO: Separate Live and NON Live data (maybe check every 15s-1m or an option to refresh)
+// TODO: Sanitize Admin ONLY stuff
+// TODO: ADD Docker Support
+// TODO: ADD Network, Wifi, Bluetooth information
+// TODO: DO NOT OVER SHARE STUFF
 
-export function getDeviceMetrics() {
-	const isLinux = os.platform() === "linux";
+import * as si from "systeminformation";
+import { pick } from "@/utils/object";
+// import { bytesToMB } from "@/utils/convert";
 
-	const mem = isLinux
-		? getLinuxMem()
-		: { total: os.totalmem(), available: os.freemem() };
+// TODO: Split this fn, make it modular so that its easy to get and manage data (for diff roles)
+// TODO: Checkout performance, benchmark (low priority right nows)
+export async function getMetrics() {
+	console.log("call");
 
-	const cpus = os.cpus();
-	const usage = cpus.map((cpu) => {
-		const t = cpu.times;
-		const totalTick = t.user + t.nice + t.sys + t.idle + t.irq;
-		return totalTick > 0 ? (1 - t.idle / totalTick) * 100 : 0;
-	});
+	// TODO: limit data used for diff users
+	// Example:
+	// Do not share CPU Info and other critical system information
+	// Only share Load, Mem available, CPU usage (maybe only to the authed users, admin or normal/some rolled users)
+	const data = (await si.get({
+		cpu: "*",
+		mem: "*",
+		time: "*",
+		system: "*",
+		osInfo: "*",
+		disksIO: "*",
+		diskLayout: "*",
+		currentLoad: "*",
+		// networkStats: "*",
+	})) as Data;
 
-	return {
-		timestamp: round(performance.now()),
-		load: os.loadavg().map((v) => round(v)),
-		memory: {
-			total: mem.total,
-			available: mem.available,
-			usedPercent: round((1 - mem.available / mem.total) * 100),
-		},
-		cpu: {
-			cores: cpus.length,
-			model: cpus[0]?.model ?? cpus[1]?.model,
-			usage: usage.map((v) => round(v)),
-			avgUsage: round(usage.reduce((a, b) => a + b, 0) / usage.length),
-		},
-		uptimeSec: os.uptime(),
-		platform: os.platform(),
-		arch: os.arch(),
-		hostname: os.hostname(),
+	type Data = {
+		cpu: si.Systeminformation.CpuData;
+		mem: si.Systeminformation.MemData;
+		time: si.Systeminformation.TimeData;
+		system: si.Systeminformation.SystemData;
+		osInfo: si.Systeminformation.OsData;
+		disksIO: si.Systeminformation.DisksIoData;
+		diskLayout: si.Systeminformation.DiskLayoutData[];
+		currentLoad: si.Systeminformation.CurrentLoadData;
+		networkStats: si.Systeminformation.NetworkStatsData[];
 	};
-}
 
-function getLinuxMem() {
-	const text = fs.readFileSync("/proc/meminfo", "utf8");
-	let total = 0;
-	let available = 0;
+	// TODO: setup docker
+	// const dockerAll = await si.dockerAll();
+	// console.log(dockerAll);
 
-	for (const line of text.split("\n")) {
-		if (line.startsWith("MemTotal:")) {
-			total = parseInt(line.split(/\s+/)[1], 10) * 1024;
-		}
-		if (line.startsWith("MemAvailable:")) {
-			available = parseInt(line.split(/\s+/)[1], 10) * 1024;
-		}
-	}
+	const cpu = pick(data.cpu, [
+		"brand",
+		"speed",
+		"cores",
 
-	return { total, available };
-}
+		// TODO: Admin Only
+		"vendor",
+		"manufacturer",
+		"physicalCores",
+	]);
 
-function round(n: number, d = 2) {
-	return Math.round(n * 10 ** d) / 10 ** d;
+	const load = pick(data.currentLoad, [
+		"avgLoad",
+		"currentLoad",
+		"currentLoadUser",
+		"currentLoadSystem",
+		"currentLoadIdle",
+	]);
+
+	const mem = pick(
+		data.mem,
+		[
+			"total",
+			"free",
+			"used",
+			"active",
+			"available",
+			"swapfree",
+			"swaptotal",
+			"swapused",
+		],
+		// bytesToMB, // NOTE: Do it client side ? idk
+	);
+
+	const io = pick(data.disksIO, ["rIO_sec", "wIO_sec", "tIO_sec", "ms"]);
+
+	const disks = data.diskLayout.map((v) =>
+		pick(v, [
+			"type",
+			"name",
+			"size",
+			"vendor",
+			"temperature",
+
+			// TODO: Admin Only
+			"device",
+			"serialNum",
+			"interfaceType",
+			"firmwareRevision",
+
+			// Important: Needs `smartmontools` on linux to get it
+			// TODO: Admin Only and sanitize
+			"smartData",
+		]),
+	);
+
+	// TODO: Maybe admin only, idk it needs review
+	const sys = pick(data.system, [
+		"model",
+		"virtual",
+		"raspberry",
+		"manufacturer",
+	]);
+
+	const osInfo = pick(data.osInfo, [
+		"arch",
+		"distro",
+		"release",
+		"platform",
+
+		// TODO: ADMIN Only
+		"kernel",
+		"hostname",
+	]);
+
+	// const networkStats = data.networkStats.map((v) =>
+	// 	pick(v, [
+	// 		"iface",
+	// 		"operstate",
+	// 		"rx_sec",
+	// 		"rx_bytes",
+	// 		"rx_dropped",
+	// 		"rx_errors",
+	// 		"tx_sec",
+	// 		"tx_bytes",
+	// 		"tx_dropped",
+	// 		"tx_errors",
+	// 	]),
+	// );
+
+	const metrics = {
+		io,
+		cpu,
+		mem,
+		sys,
+		load,
+		time: data.time,
+		disks,
+		osInfo,
+		// networkStats,
+	};
+
+	return metrics;
 }
